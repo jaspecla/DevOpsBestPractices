@@ -10,9 +10,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{D730B864-0C0B-42B4-9232-1C36D65B090F}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\arm-template-deploy-dev.yaml = .github\workflows\arm-template-deploy-dev.yaml
+		.github\workflows\arm-template-deploy-prod.yaml = .github\workflows\arm-template-deploy-prod.yaml
+		.github\workflows\build-and-test-only.yaml = .github\workflows\build-and-test-only.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsBestPractices.Tests", "DevOpsBestPractices.Tests\DevOpsBestPractices.Tests.csproj", "{9B54410B-4411-4D43-BD59-E53CC954D612}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevOpsBestPractices.Tests", "DevOpsBestPractices.Tests\DevOpsBestPractices.Tests.csproj", "{9B54410B-4411-4D43-BD59-E53CC954D612}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
