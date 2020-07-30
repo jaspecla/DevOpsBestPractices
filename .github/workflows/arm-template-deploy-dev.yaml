@@ -5,8 +5,8 @@ on:
     branches:
       - master
     paths:
-      - ".github/workflows/deployStorageAccount.yml"
-      - "ARMDeployment/azuredeploy.json"
+      - ".github/workflows/arm-template-deploy-dev.yaml"
+      - "./ARMDeployment/azuredeploy.json"
 
 jobs:
   deploy-storage-account-template:
