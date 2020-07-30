@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\arm-template-deploy-dev.yaml = .github\workflows\arm-template-deploy-dev.yaml
 		.github\workflows\arm-template-deploy-prod.yaml = .github\workflows\arm-template-deploy-prod.yaml
+		.github\workflows\build-and-test-only.yaml = .github\workflows\build-and-test-only.yaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevOpsBestPractices.Tests", "DevOpsBestPractices.Tests\DevOpsBestPractices.Tests.csproj", "{9B54410B-4411-4D43-BD59-E53CC954D612}"
