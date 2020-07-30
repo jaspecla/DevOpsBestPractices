@@ -24,11 +24,12 @@ jobs:
           creds: ${{ secrets.DEV_AZURE_CREDENTIALS }}
 
       - name: Deploy ARM Template
-        id: arm-template-deploy
-        uses: azure/CLI@v1
+        id: deploy-arm-template
+        uses: whiteducksoftware/azure-arm-action-js@v3
         with:
-          inlineScript: |
-            INSTRUMENTATION_KEY=`az deployment group create --resource-group $resourceGroupName --template-file ./ARMDeployment/azuredeploy.json --parameters web_app_name=$webAppName app_service_plan_name=$appServicePlaneName app_insights_name=$appInsightsName --query properties.outputs.AppInsightsInstrumentationKey`
+          scope: resourcegroup
+          resourceGroupName: ${{ env.resourceGroupName }}
+          templateLocation: ./ARMDeployment/azuredeploy.json
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -55,6 +56,6 @@ jobs:
         with:
           app-name: '${{ env.webAppName }}'
           app-settings-json: >-
-            [{"name": "APPINSIGHTS_INSTRUMENTATIONKEY", "value": "${{ env.INSTRUMENTATION_KEY }}", "slotSetting": false}]
+            [{"name": "APPINSIGHTS_INSTRUMENTATIONKEY", "value": "${{ steps.deploy-arm-template.outputs.AppInsightsInstrumentationKey }}", "slotSetting": false}]
         id: settings
 
