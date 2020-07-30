@@ -2,13 +2,17 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "sites_devops_bestpractices_demo_name": {
+    "web_app_name": {
       "defaultValue": "devops-bestpractices-demo",
       "type": "String"
     },
-    "serverfarms_DevOpsBestPracticesPlan_name": {
+    "app_service_plan_name": {
       "defaultValue": "DevOpsBestPracticesPlan",
       "type": "String"
+    },
+    "app_insights_name": {
+      "defaultValue": "devops-bestpractices-demo-ai",
+      "type": "string"
     }
   },
   "variables": {},
@@ -16,7 +20,7 @@
     {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
-      "name": "[parameters('serverfarms_DevOpsBestPracticesPlan_name')]",
+      "name": "[parameters('app_service_plan_name')]",
       "location": "East US",
       "sku": {
         "name": "P1v2",
@@ -40,27 +44,27 @@
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
-      "name": "[parameters('sites_devops_bestpractices_demo_name')]",
+      "name": "[parameters('web_app_name')]",
       "location": "East US",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]"
       ],
       "kind": "app,linux",
       "properties": {
         "enabled": true,
         "hostNameSslStates": [
           {
-            "name": "[concat(parameters('sites_devops_bestpractices_demo_name'), '.azurewebsites.net')]",
+            "name": "[concat(parameters('web_app_name'), '.azurewebsites.net')]",
             "sslState": "Disabled",
             "hostType": "Standard"
           },
           {
-            "name": "[concat(parameters('sites_devops_bestpractices_demo_name'), '.scm.azurewebsites.net')]",
+            "name": "[concat(parameters('web_app_name'), '.scm.azurewebsites.net')]",
             "sslState": "Disabled",
             "hostType": "Repository"
           }
         ],
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name'))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]",
         "reserved": true,
         "isXenon": false,
         "hyperV": false,
@@ -78,10 +82,10 @@
     {
       "type": "Microsoft.Web/sites/config",
       "apiVersion": "2018-11-01",
-      "name": "[concat(parameters('sites_devops_bestpractices_demo_name'), '/web')]",
+      "name": "[concat(parameters('web_app_name'), '/web')]",
       "location": "East US",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('sites_devops_bestpractices_demo_name'))]"
+        "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
       ],
       "properties": {
         "numberOfWorkers": 1,
@@ -150,10 +154,10 @@
     {
       "type": "Microsoft.Web/sites/hostNameBindings",
       "apiVersion": "2018-11-01",
-      "name": "[concat(parameters('sites_devops_bestpractices_demo_name'), '/', parameters('sites_devops_bestpractices_demo_name'), '.azurewebsites.net')]",
+      "name": "[concat(parameters('web_app_name'), '/', parameters('web_app_name'), '.azurewebsites.net')]",
       "location": "East US",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('sites_devops_bestpractices_demo_name'))]"
+        "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
       ],
       "properties": {
         "siteName": "devops-bestpractices-demo",
@@ -161,19 +165,19 @@
       }
     },
     {
-      "name": "[concat(parameters('serverfarms_DevOpsBestPracticesPlan_name'), '-', resourceGroup().name)]",
+      "name": "[concat(parameters('app_service_plan_name'), '-', resourceGroup().name)]",
       "type": "Microsoft.Insights/autoscalesettings",
       "location": "[resourceGroup().location]",
       "apiVersion": "2014-04-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]"
       ],
       "tags": {
-        "[concat('hidden-link:', resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name')))]": "Resource",
-        "displayName": "devops-bestpractices-appinsights AutoScale"
+        "[concat('hidden-link:', resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name')))]": "Resource",
+        "displayName": "[concat(parameters('app_insights_name'), ' AutoScale')]"
       },
       "properties": {
-        "name": "[concat(parameters('serverfarms_DevOpsBestPracticesPlan_name'), '-', resourceGroup().name)]",
+        "name": "[concat(parameters('app_service_plan_name'), '-', resourceGroup().name)]",
         "profiles": [
           {
             "name": "Default",
@@ -186,7 +190,7 @@
               {
                 "metricTrigger": {
                   "metricName": "CpuPercentage",
-                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name'))]",
+                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]",
                   "timeGrain": "PT1M",
                   "statistic": "Average",
                   "timeWindow": "PT10M",
@@ -204,7 +208,7 @@
               {
                 "metricTrigger": {
                   "metricName": "CpuPercentage",
-                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name'))]",
+                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]",
                   "timeGrain": "PT1M",
                   "statistic": "Average",
                   "timeWindow": "PT1H",
@@ -223,22 +227,22 @@
           }
         ],
         "enabled": false,
-        "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_DevOpsBestPracticesPlan_name'))]"
+        "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]"
       }
     },
     {
-      "name": "devops-bestpractices-appinsights",
+      "name": "[parameters('app_insights_name')]",
       "type": "Microsoft.Insights/components",
       "location": "East US",
       "apiVersion": "2014-04-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('sites_devops_bestpractices_demo_name'))]"
+        "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
       ],
       "tags": {
-        "displayName": "Component devops-bestpractices-appinsights"
+        "displayName": "[concat('Component ', parameters('app_insights_name'))]"
       },
       "properties": {
-        "applicationId": "[resourceId('Microsoft.Web/sites', parameters('sites_devops_bestpractices_demo_name'))]"
+        "applicationId": "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
       }
     }
   ]

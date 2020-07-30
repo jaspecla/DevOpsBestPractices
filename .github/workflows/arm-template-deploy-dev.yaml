@@ -1,0 +1,33 @@
+name: Deploy ARM Template
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/deployStorageAccount.yml"
+      - "ARMDeployment/azuredeploy.json"
+
+jobs:
+  deploy-storage-account-template:
+    runs-on: ubuntu-latest
+    env:
+      resourceGroupName: 'DevOps_BestPractices_Demo_Dev'
+      appServicePlaneName: 'DevopsBestPracticesPlanDev'
+      webAppName: 'devops-bestpractices-demo-dev'
+      appInsightsName: 'devops-bestpractices-demo-ai-dev'
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.DEV_AZURE_CREDENTIALS }}
+
+
+      - name: Deploy ARM Template
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az group deployment create --resource-group ${resourceGroupName} --template-file ./ARMDeployment/azuredeploy.json --parameters web_app_name=${webAppName} app_service_plan_name=${appServicePlaneName} app_insights_name=${appInsightsName}
