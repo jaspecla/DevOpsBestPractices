@@ -2,6 +2,7 @@ name: Deploy Web App via ARM Template
 
 on:
   push:
+  pull_request:
     branches:
       - master
 
