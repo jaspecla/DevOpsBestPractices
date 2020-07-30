@@ -30,7 +30,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            INSTRUMENTATION_KEY=`az group deployment create --resource-group ${{ resourceGroupName }} --template-file ./ARMDeployment/azuredeploy.json --parameters web_app_name=${{ webAppName }} app_service_plan_name=${{ appServicePlaneName }} app_insights_name=${{ appInsightsName }} --query properties.outputs.AppInsightsInstrumentationKey`
+            INSTRUMENTATION_KEY=`az group deployment create --resource-group $resourceGroupName --template-file ./ARMDeployment/azuredeploy.json --parameters web_app_name=$webAppName app_service_plan_name=$appServicePlaneName app_insights_name=$appInsightsName --query properties.outputs.AppInsightsInstrumentationKey`
             echo "::set-output name=instrumentationKey::$INSTRUMENTATION_KEY"
 
   deploy-dotnet-app-job:
