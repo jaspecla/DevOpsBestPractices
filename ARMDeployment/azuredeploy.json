@@ -243,13 +243,13 @@
       },
       "properties": {
         "applicationId": "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
-      },
-      "outputs": {
-        "AppInsightsInstrumentationKey": {
-          "value": "[reference(resourceId('Microsoft.Insights/components', parameters('app_insights_name')), '2014-04-01').InstrumentationKey]",
-          "type": "string"
-        }
       }
     }
-  ]
+  ],
+  "outputs": {
+    "AppInsightsInstrumentationKey": {
+      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('app_insights_name')), '2014-04-01').InstrumentationKey]",
+      "type": "string"
+    }
+  }
 }
