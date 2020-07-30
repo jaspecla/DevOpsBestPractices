@@ -51,8 +51,8 @@ jobs:
           dotnet-version: 3.1.101
         
       # dotnet build, test, and publish
-      - name: dotnet build ./DevOpsBestPractices/DevOpsBestPractices.csproj
-        run: dotnet build --configuration Release
+      - name: dotnet build
+        run: dotnet build ./DevOpsBestPractices/DevOpsBestPractices.csproj --configuration Release
       - name: dotnet test
         run: dotnet test --configuration Release
       - name: dotnet publish
