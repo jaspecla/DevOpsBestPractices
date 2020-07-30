@@ -47,7 +47,8 @@
       "name": "[parameters('web_app_name')]",
       "location": "East US",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('app_service_plan_name'))]",
+        "[resourceId('Microsoft.Insights/components', parameters('app_insights_name'))]"
       ],
       "kind": "app,linux",
       "properties": {
@@ -68,7 +69,14 @@
         "reserved": true,
         "isXenon": false,
         "hyperV": false,
-        "siteConfig": {},
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(parameters('app_insights_name')).InstrumentationKey]"
+            }
+          ]
+        },
         "scmSiteAlsoStopped": false,
         "clientAffinityEnabled": false,
         "clientCertEnabled": false,
@@ -235,9 +243,6 @@
       "type": "Microsoft.Insights/components",
       "location": "East US",
       "apiVersion": "2014-04-01",
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
-      ],
       "tags": {
         "displayName": "[concat('Component ', parameters('app_insights_name'))]"
       },
@@ -245,11 +250,5 @@
         "applicationId": "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
       }
     }
-  ],
-  "outputs": {
-    "AppInsightsInstrumentationKey": {
-      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('app_insights_name')), '2014-04-01').InstrumentationKey]",
-      "type": "string"
-    }
-  }
+  ]
 }

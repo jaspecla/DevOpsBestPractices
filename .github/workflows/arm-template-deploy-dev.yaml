@@ -27,7 +27,6 @@ jobs:
         id: deploy-arm-template
         uses: whiteducksoftware/azure-arm-action-js@v3
         with:
-          scope: resourcegroup
           resourceGroupName: ${{ env.resourceGroupName }}
           templateLocation: ./ARMDeployment/azuredeploy.json
 
@@ -51,11 +50,3 @@ jobs:
           app-name: '${{ env.webAppName }}'
           package: ${{env.DOTNET_ROOT}}/devopsbestpractices
           
-      - name: "Set Web App Settings"
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: '${{ env.webAppName }}'
-          app-settings-json: >-
-            [{"name": "APPINSIGHTS_INSTRUMENTATIONKEY", "value": "${{ steps.deploy-arm-template.outputs.AppInsightsInstrumentationKey }}", "slotSetting": false}]
-        id: settings
-
