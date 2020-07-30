@@ -62,13 +62,13 @@ jobs:
       - name: 'Deploy Azure WebApp'
         uses: azure/webapps-deploy@v1
         with: 
-          app-name: ${webAppName}
+          app-name: $webAppName
           package: ${{env.DOTNET_ROOT}}/devopsbestpractices
           
       - name: "Set Web App Settings"
         uses: azure/appservice-settings@v1
         with:
-          app-name: '${webAppName}'
+          app-name: '$webAppName'
           app-settings-json: >-
             [{"name": "APPINSIGHTS_INSTRUMENTATIONKEY", "value": "${{ needs.deploy-arm-template-job.outputs.instrumentationKey }}", "slotSetting": false}]
         id: settings
