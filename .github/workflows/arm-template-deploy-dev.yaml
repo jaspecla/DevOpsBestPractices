@@ -1,21 +1,21 @@
-name: Deploy ARM Template
+name: Deploy Web App via ARM Template
 
 on:
   push:
     branches:
       - master
-    paths:
-      - ".github/workflows/arm-template-deploy-dev.yaml"
-      - "./ARMDeployment/azuredeploy.json"
+
+env:
+  resourceGroupName: 'DevOps_BestPractices_Demo_Dev'
+  appServicePlaneName: 'DevopsBestPracticesPlanDev'
+  webAppName: 'devops-bestpractices-demo-dev'
+  appInsightsName: 'devops-bestpractices-demo-ai-dev'
 
 jobs:
-  deploy-storage-account-template:
+  deploy-arm-template-job:
     runs-on: ubuntu-latest
-    env:
-      resourceGroupName: 'DevOps_BestPractices_Demo_Dev'
-      appServicePlaneName: 'DevopsBestPracticesPlanDev'
-      webAppName: 'devops-bestpractices-demo-dev'
-      appInsightsName: 'devops-bestpractices-demo-ai-dev'
+    outputs:
+      instrumentationKey: ${{ steps.arm-template-deploy.outputs.instrumentationKey }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
@@ -25,9 +25,43 @@ jobs:
         with:
           creds: ${{ secrets.DEV_AZURE_CREDENTIALS }}
 
-
       - name: Deploy ARM Template
+        id: arm-template-deploy
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az group deployment create --resource-group ${resourceGroupName} --template-file ./ARMDeployment/azuredeploy.json --parameters web_app_name=${webAppName} app_service_plan_name=${appServicePlaneName} app_insights_name=${appInsightsName}
+            INSTRUMENTATION_KEY=`az group deployment create --resource-group ${{ resourceGroupName }} --template-file ./ARMDeployment/azuredeploy.json --parameters web_app_name=${{ webAppName }} app_service_plan_name=${{ appServicePlaneName }} app_insights_name=${{ appInsightsName }} --query properties.outputs.AppInsightsInstrumentationKey`
+            echo "::set-output name=instrumentationKey::$INSTRUMENTATION_KEY"
+
+  deploy-dotnet-app-job:
+    needs: deploy-arm-template-job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+        
+      # dotnet build, test, and publish
+      - name: dotnet build
+        run: dotnet build --configuration Release
+      - name: dotnet test
+        run: dotnet test --configuration Release
+      - name: dotnet publish
+        run: |
+          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/devopsbestpractices 
+
+      - name: 'Deploy Azure WebApp'
+        uses: azure/webapps-deploy@v1
+        with: 
+          app-name: ${webAppName}
+          package: ${{env.DOTNET_ROOT}}/devopsbestpractices
+          
+      - name: "Set Web App Settings"
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: '${webAppName}'
+          app-settings-json: >-
+            [{"name": "APPINSIGHTS_INSTRUMENTATIONKEY", "value": "${{ needs.deploy-arm-template-job.outputs.instrumentationKey }}", "slotSetting": false}]
+        id: settings
+

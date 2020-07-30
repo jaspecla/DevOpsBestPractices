@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>a00c852c-9a2c-4dab-b974-1750b5a1ce30</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/78665f33-bc7d-43df-9f83-ac1064dd74eb/resourceGroups/DevOps_BestPractices_Demo/providers/microsoft.insights/components/DevOps_BestPractices_Demo_AI</ApplicationInsightsResourceId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.14.0" />
+  </ItemGroup>
 
 </Project>
