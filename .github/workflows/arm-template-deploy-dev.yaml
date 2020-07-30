@@ -52,12 +52,12 @@ jobs:
         
       # dotnet build, test, and publish
       - name: dotnet build
-        run: dotnet build ./DevOpsBestPractices/DevOpsBestPractices.csproj --configuration Release
+        run: dotnet build --configuration Release
       - name: dotnet test
         run: dotnet test --configuration Release
       - name: dotnet publish
         run: |
-          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/devopsbestpractices 
+          dotnet publish ./DevOpsBestPractices/DevOpsBestPractices.csproj -c Release -o ${{env.DOTNET_ROOT}}/devopsbestpractices 
 
       - name: 'Deploy Azure WebApp'
         uses: azure/webapps-deploy@v1
